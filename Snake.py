@@ -31,36 +31,28 @@ while run == True:
 
     #Specify controls
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and x > 0:
+    if keys[pygame.K_LEFT] and x > 0: #this makes sure that the block will not leave the screen if a movement takes place.
         x -= vel
 
     if keys[pygame.K_RIGHT] and x < screenWidth - width:
         x += vel
     
-    if not (isJump):
-        if keys[pygame.K_DOWN] and y < screenHeight - height:
-            y += vel
-        
-        if keys[pygame.K_UP] and y > 0:
+    if not(isJump): 
+        if keys[pygame.K_UP] and y > vel:
             y -= vel
+
+        if keys[pygame.K_DOWN] and y < 500 - height - vel:
+            y += vel
 
         if keys[pygame.K_SPACE]:
             isJump = True
-
     else:
-        if jumpCount >= -1:
-            
-            # neg 
-            neg = 1
-            if jumpCount < 0:
-                neg = -1
-            y -= (jumpCount **2) * 0.5 *neg
-            jumpCount -0.25
-            sleep(0.5)
-
-        else:
-            isJump = False
-            jumpCount = 1
+        if jumpCount >= -10:
+            y -= (jumpCount * abs(jumpCount)) * 0.5
+            jumpCount -= 1
+        else:  # This will execute if our jump is finished, resetting the variables.
+            jumpCount = 10
+            isJump = False 
     #Everytime that a movement happens, the rest of the screen should fill to black.
     win.fill ((0,0,0))
     # Draw in a rectangle, then update the screen so it is visible
