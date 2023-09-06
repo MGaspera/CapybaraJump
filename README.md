@@ -17,9 +17,9 @@ To see if it works, run one of the included examples:
 os allows us to search through various directories. Currently, it's being used to locate the "images" folder, which stores all the sprites and the background.
 
 
-#Assets
-***Background***
-"STRINGSTAR FIELDS" by trixelized on Itch.io: https://trixelized.itch.io/starstring-fields
+# Assets <br>
+***Background*** <br>
+"STRINGSTAR FIELDS" by trixelized on Itch.io: https://trixelized.itch.io/starstring-fields <br>
 
-***Player Sprite***
+***Player Sprite*** <br>
 "Charlie the Capybara by niffirgGames on itch.io: https://niffirggames.itch.io/charliethecapybara
