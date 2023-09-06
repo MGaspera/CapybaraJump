@@ -1,7 +1,6 @@
 import pygame
+
 pygame.init()
-import time
-from time import sleep
 
 win = pygame.display.set_mode((500, 500))
 pygame.display.set_caption("Snake")
@@ -18,9 +17,9 @@ vel = 5
 isJump = False
 jumpCount = 10
 falling = False
-initial_y = y  # Record the initial y-position before jumping
+initialY = y  # Record the initial y-position before jumping
 
-# Simple while loop to add controls to the
+# Simple while loop to add controls
 run = True
 while run:
     pygame.time.delay(100)
@@ -38,7 +37,7 @@ while run:
     if keys[pygame.K_RIGHT] and x < screenWidth - width:
         x += vel
     
-    if not(isJump): 
+    if not isJump: 
         if keys[pygame.K_UP] and y > vel:
             y -= vel
 
@@ -47,7 +46,7 @@ while run:
 
         if keys[pygame.K_SPACE]:
             isJump = True
-            initial_y = y  # Record the initial y-position before jumping
+            initialY = y  # Record the initial y-position before jumping
 
     else:
         if jumpCount >= -10:
@@ -68,10 +67,8 @@ while run:
             jumpCount = 0  # Reset jumpCount when hitting the top
 
         # If the sprite hits the ground, reset its position to the initial y
-        if y > initial_y:
-            y = initial_y
-
-
+        if y >= initialY:
+            y = initialY
 
     # Every time that a movement happens, the rest of the screen should fill to black.
     win.fill((0, 0, 0))
@@ -81,4 +78,3 @@ while run:
     pygame.display.update()
 
 pygame.quit()
-
