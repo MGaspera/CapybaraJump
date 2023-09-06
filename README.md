@@ -13,4 +13,5 @@ To see if it works, run one of the included examples:
 
 ``` python3 -m pygame.examples.aliens``` 
 
-  
+***os***
+os allows us to search through various directories. Currently, it's being used to locate the "images" folder, which stores all the sprites and the background.
