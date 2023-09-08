@@ -6,7 +6,7 @@ from PublicVariables import publicVariables
 
 pygame.init()
 
-pygame.display.set_caption("Capybara Platformer")
+pygame.display.set_caption("Capybara Jump")
 win = pygame.display.set_mode((1280, 768))
 
 # Simple while loop to add controls
