@@ -1,83 +1,116 @@
 import pygame
 import os
-import PublicVariables
+import Classes
 import Debug
-from PublicVariables import publicVariables
+from Classes import win, assets, player, fonts
 
 pygame.init()
 
+# Class instances
+font = fonts()
+myPlayer = player()
+window = win()
+asset = assets()
+
 pygame.display.set_caption("Capybara Jump")
-win = pygame.display.set_mode((1280, 768))
 
 # Simple while loop to add controls
 run = True
+debugOn = False
+debug_cooldown = 0  # Add a cooldown timer
 while run:
-    # Clear the screen only once at the beginning of each frame
-    publicVariables.win.fill((0, 0, 0))
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
     # Specify controls
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and PublicVariables.x > 0:
-        PublicVariables.x -= PublicVariables.vel
-        lastMove = "L"
+
+    # Update game state
+    if keys[pygame.K_LEFT] and myPlayer.x > 0:
+        myPlayer.x -= myPlayer.vel
+        myPlayer.lastMove = "L"  # Update lastMove for left movement
+        asset.frameCount += 1
+        if asset.frameCount >= len(asset.leftSprites) * asset.frameDelay:
+            asset.frameCount = 0  # Reset frame count for left movement
 
     if keys[pygame.K_HASH]:
-        Debug.debugMode()
+        # Check if debug mode cooldown is over
+        if debug_cooldown == 0:
+            debugOn = not debugOn
+            debug_cooldown = 30  # Set cooldown to 30 frames (adjust as needed)
+            print("Debug mode toggled!")
 
+    # Decrement the cooldown timer
+    if debug_cooldown > 0:
+        debug_cooldown -= 1
 
-    if keys[pygame.K_RIGHT] and PublicVariables.x < PublicVariables.screenWidth - PublicVariables.width:
-        PublicVariables.x += PublicVariables.vel
-        lastMove = "R"
+    if keys[pygame.K_RIGHT] and myPlayer.x + myPlayer.width + myPlayer.vel < window.screenWidth:
+        myPlayer.x += myPlayer.vel
+        myPlayer.lastMove = "R"  # Update lastMove for right movement
+        asset.frameCount += 1
+        if asset.frameCount >= len(asset.rightSprites) * asset.frameDelay:
+            asset.frameCount = 0  # Reset frame count for right movement
 
-    if keys[pygame.K_SPACE] and not isJump:  # Only allow jumping if not already jumping
-        isJump = True
-        initialY = PublicVariables.y  # Record the initial y-position before jumping
+    if keys[pygame.K_SPACE] and not myPlayer.isJump:  # Only allow jumping if not already jumping
+        myPlayer.isJump = True
+        initialY = myPlayer.y  # Record the initial y-position before jumping
 
-    if isJump:
-        if jumpCount >= -10:
-            if jumpCount < 0 and not falling:
-                PublicVariables.y += (jumpCount * abs(jumpCount)) * PublicVariables.jumpSpeed *2 # Adjust the jump speed here
-                falling = True
+    if myPlayer.isJump:
+        if myPlayer.jumpCount >= -10:
+            if myPlayer.jumpCount < 0 and not myPlayer.falling:
+                myPlayer.y += (myPlayer.jumpCount * abs(myPlayer.jumpCount)) * myPlayer.jumpSpeed * 3  # Adjust the jump speed here
+                myPlayer.falling = True
             else:
-                PublicVariables.y -= (jumpCount * abs(jumpCount)) * PublicVariables.jumpSpeed *2 # Adjust the jump speed here
-            jumpCount -= 1
+                myPlayer.y -= (myPlayer.jumpCount * abs(myPlayer.jumpCount)) * myPlayer.jumpSpeed * 3
+            myPlayer.jumpCount -= 1
         else:
-            jumpCount = 10
-            isJump = False
-            falling = False
+            myPlayer.jumpCount = 10
+            myPlayer.isJump = False
+            myPlayer.falling = False
+
+    # Clear the screen
+    window.windowSize.fill((0, 0, 0))
 
     # Draw the (resized) background
-    PublicVariables.win.blit(PublicVariables.resizedBg, (0, 0))
+    window.windowSize.blit(asset.resizedBgImg, (0, 0))
 
-    # Draw the player sprite based on movement and direction
-    if isJump:
-        frameCount = 0  # Reset frame count when jumping
-        PublicVariables.win.blit(PublicVariables.standingSprite, (PublicVariables.x, PublicVariables.y))
+    #jumping
+    if myPlayer.isJump:
+        myPlayer.frameCount = 0  # Reset frame count when jumping
+        if myPlayer.lastMove == "L":  # Check the last move direction
+            # Draw the jumping sprite facing left
+            window.windowSize.blit(pygame.transform.flip(myPlayer.standingSprite, True, False), (myPlayer.x, myPlayer.y))
+        else:
+            # Draw the jumping sprite facing right
+            window.windowSize.blit(myPlayer.standingSprite, (myPlayer.x, myPlayer.y))
     elif keys[pygame.K_LEFT]:
-        frameCount += 1
-        if frameCount >= len(PublicVariables.leftSprites) * PublicVariables.frameDelay:
-            frameCount = 0
-        currentFrame = PublicVariables.leftSprites[frameCount // PublicVariables.frameDelay]
-        PublicVariables.win.blit(currentFrame, (PublicVariables.x, PublicVariables.y))
+        asset.leftFrameCount += 1
+        myPlayer.lastMove = "L"
+        if asset.leftFrameCount >= len(myPlayer.leftSprites) * asset.frameDelay:
+            asset.leftFrameCount = 0
+        window.windowSize.blit(myPlayer.leftSprites[asset.leftFrameCount // asset.frameDelay], (myPlayer.x, myPlayer.y))
     elif keys[pygame.K_RIGHT]:
-        frameCount += 1
-        if frameCount >= len(PublicVariables.rightSprites) * PublicVariables.frameDelay:
-            frameCount = 0
-        currentFrame = PublicVariables.rightSprites[frameCount // PublicVariables.frameDelay]
-        # Flip the sprite horizontally to face right
-        currentFrame = pygame.transform.flip(currentFrame, True, False)
-        PublicVariables.win.blit(currentFrame, (PublicVariables.x, PublicVariables.y))
+        asset.rightFrameCount += 1
+        myPlayer.lastMove = "R"
+        if asset.rightFrameCount >= len(myPlayer.rightSprites) * asset.frameDelay:
+            asset.rightFrameCount = 0
+        myPlayer.currentFrame = myPlayer.rightSprites[asset.rightFrameCount // asset.frameDelay]
+        myPlayer.currentFrame = pygame.transform.flip(myPlayer.currentFrame, True, False)
+        window.windowSize.blit(myPlayer.currentFrame, (myPlayer.x, myPlayer.y))
     else:
-        frameCount = 0  # Reset frame count when standing still
-        PublicVariables.win.blit(PublicVariables.standingSprite, (PublicVariables.x, PublicVariables.y))
+        myPlayer.frameCount = 0  # Reset frame count when standing still
+        if myPlayer.lastMove == "L":  # Check the last move direction
+            # Draw the standing sprite facing left
+            window.windowSize.blit(pygame.transform.flip(myPlayer.standingSprite, True, False), (myPlayer.x, myPlayer.y))
+        else:
+            # Draw the standing sprite facing right
+            window.windowSize.blit(myPlayer.standingSprite, (myPlayer.x, myPlayer.y))
+    # Draw the debug information if debug mode is enabled
+    if debugOn:
+        Debug.debugMode()
 
-
-
-    # Update the display
+    # Update the display once per frame
     pygame.display.update()
 
 pygame.quit()
