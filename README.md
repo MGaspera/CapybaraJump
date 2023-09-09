@@ -51,7 +51,7 @@ os allows us to search through various directories. Currently, it's being used t
 
 ## Assets <br>
 ***Background*** <br>
-"STRINGSTAR FIELDS" by trixelized on Itch.io: https://trixelized.itch.io/starstring-fields <br>
+"STARSTRING FIELDS" by trixelized on Itch.io: https://trixelized.itch.io/starstring-fields <br>
 
 ***Player Sprite*** <br>
 "Charlie the Capybara by niffirgGames on itch.io: https://niffirggames.itch.io/charliethecapybara
