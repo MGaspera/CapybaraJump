@@ -44,26 +44,30 @@ class player:
         self.width = self.original_width
         self.height = self.original_height
         self.vel = 3
-        self.lastMove = "L"
+        self.lastMove = "R"
         self.isJump = False
         self.jumpCount = 10
         self.falling = False
         self.initialY = self.y
         self.jumpSpeed = 0.1
+        self.canIdle = True
 
         # Initialize frame counts for left and right animations
         self.leftFrameCount = 0
         self.rightFrameCount = 0
 
         # Load and scale the player's images
-        self.leftSprites = [pygame.image.load(os.path.join("images", f'Lmove ({i}).gif')) for i in range(1, 9)]
-        self.rightSprites = [pygame.image.load(os.path.join("images", f'Rmove ({i}).gif')) for i in range(1, 9)]
-        self.standingSprite = pygame.image.load(os.path.join("images", "standing.gif"))
+        self.leftSprites = [pygame.image.load(os.path.join("images/Colin/Lmove/", f'Lmove ({i}).gif')) for i in range(1, 9)]
+        self.rightSprites = [pygame.image.load(os.path.join("images/Colin/Rmove/", f'Rmove ({i}).gif')) for i in range(1, 9)]
+        self.standingSprites = pygame.image.load(os.path.join("images/Colin/", f'standing.gif'))
+        self.idleSprites = [pygame.image.load(os.path.join("images/Colin/idle/", f'idle ({i}).gif')) for i in range(1, 16)]
 
         for i in range(8):
             self.leftSprites[i] = pygame.transform.scale(self.leftSprites[i], (self.width, self.height))
             self.rightSprites[i] = pygame.transform.scale(self.rightSprites[i], (self.width, self.height))
-        self.standingSprite = pygame.transform.scale(self.standingSprite, (self.width, self.height))
+        for i in range(15):
+            self.idleSprites[i] = pygame.transform.scale(self.idleSprites[i], (self.width, self.height))
+        self.standingSprites = pygame.transform.scale(self.standingSprites, (self.width, self.height))
 
 
 class fonts:

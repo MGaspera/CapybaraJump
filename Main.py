@@ -1,7 +1,4 @@
-import pygame
-import os
-import Classes
-import Debug
+import pygame, Debug
 from Classes import win, assets, player, fonts
 
 pygame.init()
@@ -57,6 +54,7 @@ while run:
         initialY = myPlayer.y  # Record the initial y-position before jumping
 
     if myPlayer.isJump:
+        myPlayer.canIdle = False
         if myPlayer.jumpCount >= -10:
             if myPlayer.jumpCount < 0 and not myPlayer.falling:
                 myPlayer.y += (myPlayer.jumpCount * abs(myPlayer.jumpCount)) * myPlayer.jumpSpeed * 3  # Adjust the jump speed here
@@ -80,10 +78,10 @@ while run:
         myPlayer.frameCount = 0  # Reset frame count when jumping
         if myPlayer.lastMove == "L":  # Check the last move direction
             # Draw the jumping sprite facing left
-            window.windowSize.blit(pygame.transform.flip(myPlayer.standingSprite, True, False), (myPlayer.x, myPlayer.y))
+            window.windowSize.blit(pygame.transform.flip(myPlayer.standingSprites, True, False), (myPlayer.x, myPlayer.y))
         else:
             # Draw the jumping sprite facing right
-            window.windowSize.blit(myPlayer.standingSprite, (myPlayer.x, myPlayer.y))
+            window.windowSize.blit(myPlayer.standingSprites, (myPlayer.x, myPlayer.y))
     elif keys[pygame.K_LEFT]:
         asset.leftFrameCount += 1
         myPlayer.lastMove = "L"
@@ -102,10 +100,10 @@ while run:
         myPlayer.frameCount = 0  # Reset frame count when standing still
         if myPlayer.lastMove == "L":  # Check the last move direction
             # Draw the standing sprite facing left
-            window.windowSize.blit(pygame.transform.flip(myPlayer.standingSprite, True, False), (myPlayer.x, myPlayer.y))
+            window.windowSize.blit(pygame.transform.flip(myPlayer.standingSprites, True, False), (myPlayer.x, myPlayer.y))
         else:
             # Draw the standing sprite facing right
-            window.windowSize.blit(myPlayer.standingSprite, (myPlayer.x, myPlayer.y))
+            window.windowSize.blit(myPlayer.standingSprites, (myPlayer.x, myPlayer.y))
     # Draw the debug information if debug mode is enabled
     if debugOn:
         Debug.debugMode()
