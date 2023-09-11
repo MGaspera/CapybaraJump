@@ -1,5 +1,5 @@
 import pygame
-from Classes import win, assets, player, fonts
+from Classes import win, fonts
 
 def debugMode():
     # Update the mouse coordinates
