@@ -27,7 +27,6 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-    # Specify controls
     keys = pygame.key.get_pressed()
 
     # Update game state
@@ -36,18 +35,7 @@ while run:
         playerMaths.lastMove = "L"  # Update lastMove for left movement
         playerAnim.frameCount += 1
         if playerAnim.frameCount >= len(playerAnim.leftSprites) * playerAnim.frameDelay:
-            playerMaths.frameCount = 0  # Reset frame count for left movement
-
-    if keys[pygame.K_HASH]:
-        # Check if debug mode cooldown is over
-        if debug_cooldown == 0:
-            debugOn = not debugOn
-            debug_cooldown = 30  # Set cooldown to 30 frames (adjust as needed)
-            print("Debug mode toggled!")
-
-    # Decrement the cooldown timer
-    if debug_cooldown > 0:
-        debug_cooldown -= 1
+            playerAnim.frameCount = 0  # Reset frame count for left movement
 
     if keys[pygame.K_RIGHT] and playerMaths.playerX + playerAnim.width + playerMaths.vel < winSizing.screenWidth:
         playerMaths.playerX += playerMaths.vel
@@ -56,12 +44,20 @@ while run:
         if playerAnim.frameCount >= len(playerAnim.rightSprites) * playerAnim.frameDelay:
             playerAnim.frameCount = 0  # Reset frame count for right movement
 
-    if keys[pygame.K_SPACE] and not playerMaths.isJump:  # Only allow jumping if not already jumping
-        playerMaths.isJump = True
-        initialY = playerMaths.playerY  # Record the initial y-position before jumping
+    # Handle jumping
+    if keys[pygame.K_SPACE]:
+        if not playerMaths.isJump:
+            playerMaths.isJump = True
+            playerMaths.jumpCount = 10  # Adjust as needed
 
-    if playerMaths.isJump == True:
-        playerInfo.jumping
+    # Apply gravity
+    if not playerMaths.isJump:
+        if playerMaths.playerY < 313:  # Adjust the ground level as needed
+            playerMaths.playerY += 1  # Adjust the gravity value as needed
+
+    # Call the jumping method to handle jump logic
+    playerMaths.jumping()
+
 
     # Clear the screen
     winSizing.windowSize.fill((0, 0, 0))
@@ -78,12 +74,14 @@ while run:
         else:
             # Draw the jumping sprite facing right
             winSizing.windowSize.blit(playerAnim.standingSprites, (playerMaths.playerX, playerMaths.playerY))
+
     elif keys[pygame.K_LEFT]:
         playerAnim.leftFrameCount += 1
         player.lastMove = "L"
         if playerAnim.leftFrameCount >= len(playerAnim.leftSprites) * playerAnim.frameDelay:
             playerAnim.leftFrameCount = 0
         winSizing.windowSize.blit(playerAnim.leftSprites[playerAnim.leftFrameCount // playerAnim.frameDelay], (playerMaths.playerX, playerMaths.playerY))
+
     elif keys[pygame.K_RIGHT]:
         playerAnim.rightFrameCount += 1
         player.lastMove = "R"
