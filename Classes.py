@@ -32,17 +32,22 @@ class playerAssets: #sprite animation, resizing
         self.rightSprites = [pygame.image.load(os.path.join("./images/Colin/Rmove/", f'Rmove ({i}).gif')) for i in range(1, 9)]
         self.standingSprites = pygame.image.load(f"images/Colin/standing.gif")
         self.idleSprites = [pygame.image.load(os.path.join("./images/Colin/idle/", f'idle ({i}).gif')) for i in range(1, 16)]
-        self.originalWidth = 100  # Desired width for the sprite
-        self.originalHeight = 100  # Desired height for the sprite
+        self.originalWidth = 50  # Desired width for the sprite
+        self.originalHeight = 50  # Desired height for the sprite
         self.width = self.originalWidth
         self.height = self.originalHeight
         self.currentFrame = self.leftSprites[0]  # Initialize current frame
+        self.scaleFactor = 2  # Adjust the scale factor as needed
+        self.width = self.originalWidth * self.scaleFactor
+        self.height = self.originalHeight * self.scaleFactor
+
         for i in range(8):
             self.leftSprites[i] = pygame.transform.scale(self.leftSprites[i], (self.width, self.height))
             self.rightSprites[i] = pygame.transform.scale(self.rightSprites[i], (self.width, self.height))
         for i in range(15):
             self.idleSprites[i] = pygame.transform.scale(self.idleSprites[i], (self.width, self.height))
         self.standingSprites = pygame.transform.scale(self.standingSprites, (self.width, self.height))
+
         self.leftFrameCount = 0
         self.rightFrameCount = 0
 
@@ -69,22 +74,23 @@ class playerInfo: #player maths
         self.playerX = 69
         self.playerY = 313
         self.initialY = 50 #playerAssets.playerY
-        self.jumpSpeed = 0.1
+        self.jumpHeight = 0.1
 
     def jumping(self):
-        if playerInfo.isJump:
+        if self.isJump:
             playerAssets.playerCanIdle = False
-            if playerInfo.jumpCount >= -10:
-                if playerInfo.jumpCount < 0 and not playerInfo.falling:
-                    playerInfo.playerY += (playerInfo.jumpCount * abs(playerInfo.jumpCount)) * playerInfo.jumpSpeed * 3  # Adjust the jump speed here
-                    playerInfo.falling = True
+            if self.jumpCount >= -10:
+                if self.jumpCount < 0 and not self.falling:
+                    self.playerY += (self.jumpCount * abs(self.jumpCount)) * self.jumpHeight * 3  # Adjust the jump speed here
+                    self.falling = True
                 else:
-                    playerInfo.playerY -= (playerInfo.jumpCount * abs(playerInfo.jumpCount)) * playerInfo.jumpSpeed * 3
-                playerInfo.jumpCount -= 1
+                    self.playerY -= (self.jumpCount * abs(self.jumpCount)) * self.jumpHeight * 3
+                self.jumpCount -= 1
             else:
-                playerInfo.jumpCount = 10
-                playerInfo.isJump = False
-                playerInfo.falling = False
+                self.jumpCount = 10
+                self.isJump = False
+                self.falling = False
+
 
 class fonts: #all fonts used
     def __init__(self):
