@@ -78,6 +78,24 @@ class playerInfo: #player maths
         self.playerY = 435
         self.initialY = 50 #playerAssets.playerY
         self.jumpHeight = 0.1
+        self.hitbox = (self.playerX + 17, self.playerY + 11, 29, 52)
+
+    def hit(self):
+        self.playerX = 60 # We are resetting the player position
+        self.playerY = 410
+        self.frameCount = 0
+        font1 = pygame.font.SysFont('comicsans', 100)
+        text = font1.render('-5', 1, (255,0,0))
+        window.windowSize.blit(text, (250 - (text.get_width()/2),200))
+        pygame.display.update()
+        i = 0
+        while i < 300:
+            pygame.time.delay(10)
+            i += 1
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    i = 301
+                    pygame.quit()
 
     def draw(self):
             if playerMove.frameCount + 1 >= 27:
@@ -96,17 +114,17 @@ class playerInfo: #player maths
                 else:
                     window.windowSize.blit(playerMove.leftSprites[0], (self.playerX, self.playerY))
             self.hitbox = (self.playerX + 17, self.playerY + 11, 29, 52) 
-            pygame.draw.rect(window.windowSize, (255,0,0), self.hitbox,2) # To draw the hit box around the player
+            #pygame.draw.rect(window.windowSize, (255,0,0), self.hitbox,2) # To draw the hit box around the player
 
     def jumping(self):
         if self.isJump:
             playerAssets.playerCanIdle = False
             if self.jumpCount >= -10:
                 if self.jumpCount < 0 and not self.falling:
-                    self.playerY += (self.jumpCount * abs(self.jumpCount)) * self.jumpHeight * 3  # Adjust the jump speed here
+                    self.playerY += (self.jumpCount * abs(self.jumpCount)) * self.jumpHeight * 5  # Adjust the jump speed here
                     self.falling = True
                 else:
-                    self.playerY -= (self.jumpCount * abs(self.jumpCount)) * self.jumpHeight * 3
+                    self.playerY -= (self.jumpCount * abs(self.jumpCount)) * self.jumpHeight * 5
                 self.jumpCount -= 1
             else:
                 self.jumpCount = 10
@@ -139,6 +157,8 @@ class enemy(object):
     walkRight = [pygame.image.load(os.path.join("./images/Enemy/Rmove/", f'Rmove ({i}).png')) for i in range(1, 12)]
 
     def __init__(self, x, y, width, height, end):
+        self.visible = True
+        self.health = 10
         self.x = x
         self.y = y
         self.width = width
@@ -151,17 +171,26 @@ class enemy(object):
 
     def draw(self):
         self.move()
-        if self.walkCount + 1 >= 33:
-            self.walkCount = 0
+        if self.visible:
+            if self.walkCount + 1 >= 33:
+                self.walkCount = 0
+            else:
+                self.walkCount += 1
+
 
         if self.vel > 0:
-            window.windowSize.blit(self.walkRight[self.walkCount //3], (self.x, self.y))
+            imageIndex = self.walkCount // 3 % len(self.walkRight)
+            window.windowSize.blit(self.walkRight[imageIndex], (self.x, self.y))
+
             self.walkCount += 1
         else:
-            window.windowSize.blit(self.walkLeft[self.walkCount //3], (self.x, self.y))
+            imageIndex = self.walkCount // 3 % len(self.walkLeft)
+            window.windowSize.blit(self.walkLeft[imageIndex], (self.x, self.y))
             self.walkCount += 1
+        pygame.draw.rect(window.windowSize, (255,0,0), (self.hitbox[0], self.hitbox[1] - 20, 50, 10)) # NEW
+        pygame.draw.rect(window.windowSize, (0,128,0), (self.hitbox[0], self.hitbox[1] - 20, 50 - (5 * (10 - self.health)), 10)) # NEW
         self.hitbox = (self.x + 17, self.y + 2, 31, 57) # NEW
-        pygame.draw.rect(window.windowSize, (255,0,0), self.hitbox,2) # Draws the hit box around the enemy
+        #pygame.draw.rect(window.windowSize, (255,0,0), self.hitbox,2) # Draws the hit box around the enemy
 
     def move(self):
         if self.vel > 0:
@@ -177,9 +206,13 @@ class enemy(object):
                 self.vel = self.vel * -1
                 self.walkCount = 0
 
-    # NEW METHOD
-    def hit(self):  # This will display when the enemy is hit
-        print('hit')
+    def hit(self): 
+            if self.health > 0:
+                self.health -= 1
+            else:
+                self.visible = False
+                print("dead!")
+            print('hit')
 
 
         

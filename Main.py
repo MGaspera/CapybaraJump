@@ -1,5 +1,6 @@
 import pygame, Debug
-from Classes import win, playerAssets, playerInfo, screenAssets, projectile, enemy
+from Classes import win, playerAssets, playerInfo, screenAssets, projectile, enemy, fonts
+import os
 
 
 
@@ -8,13 +9,18 @@ pygame.display.set_caption("Capybara Jump")
 
 playerRootDir = "images/Colin/"
 screenRootDir = "images/"
+bulletSound = pygame.mixer.Sound(os.path.join("./sfx", 'bullet.mp3'))
+hitSound = pygame.mixer.Sound(os.path.join("./sfx", 'hit.mp3'))
+music = pygame.mixer.music.load(os.path.join("./sfx", 'music.mp3'))
 
+pygame.mixer.music.play(-1)
 
 #class instances
 bgAssets = screenAssets(screenRootDir)
 playerMaths = playerInfo()
 playerAnim = playerAssets(playerRootDir)
 winSizing = win()
+font = fonts()
 goblin = enemy(100, 420, 64, 64, 1200)
 ammo = projectile(playerMaths.playerX + playerAnim.width // 2, playerMaths.playerY + playerAnim.height // 2, 6, (0, 0, 0), 1)
 
@@ -29,7 +35,13 @@ run = True
 debugOn = False
 debug_cooldown = 0  # Add a cooldown timer
 shootLoop = 0
+score = 0
 while run:
+
+    if playerMaths.hitbox[1] < goblin.hitbox[1] + goblin.hitbox[3] and playerMaths.hitbox[1] + playerMaths.hitbox[3] > goblin.hitbox[1]:
+        if playerMaths.hitbox[0] + playerMaths.hitbox[2] > goblin.hitbox[0] and playerMaths.hitbox[0] < goblin.hitbox[0] + goblin.hitbox[2]:
+            playerMaths.hit()
+            score -= 5
 
     if shootLoop > 0:
         shootLoop += 1
@@ -61,6 +73,7 @@ while run:
     #Shooting
     # Adding ammo to bullets list
     if keys[pygame.K_SPACE] and shootLoop == 0:
+        bulletSound.play()
         if playerMaths.lastMove == "L":
             facing = -1
         else:
@@ -75,7 +88,9 @@ while run:
     for bullet in bullets:
         if bullet.y - bullet.radius < goblin.hitbox[1] + goblin.hitbox[3] and bullet.y + bullet.radius > goblin.hitbox[1]:  # Checks x coords
             if bullet.x + bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]:  # Checks y coords
+                hitSound.play()
                 goblin.hit()  # calls enemy hit method
+                score += 1
                 bullets_to_remove.append(bullet)  # Add the bullet to the removal list
 
     # Remove bullets that need to be removed
@@ -164,6 +179,8 @@ while run:
 
     playerMaths.draw()
     goblin.draw()
+    text = font.mainFont.render("Score: " + str(score), 1, (0,0,0)) # Arguments are: text, anti-aliasing, color
+    winSizing.windowSize.blit(text, (390, 10))
     pygame.display.update()
 
 pygame.quit()
