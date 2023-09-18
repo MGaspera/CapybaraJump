@@ -83,20 +83,20 @@ class playerInfo: #player maths
             if playerMove.frameCount + 1 >= 27:
                 playerMove.frameCount = 0
 
-            if not(self.standing):
-                if self.left:
-                    window.windowSize.blit(playerMove.leftSprites[self.walkCount//3], (self.x,self.y))
-                    self.walkCount += 1
-                elif self.right:
-                    window.windowSize.blit(playerMove.rightSprites[self.walkCount//3], (self.x,self.y))
-                    self.walkCount +=1
+            if not(playerMove.standingSprites):
+                if playerMove.leftSprites:
+                    window.windowSize.blit(playerMove.leftSprites[playerMove.frameCount//3], (self.playerX,self.playerY))
+                    playerMove.frameCount += 1
+                elif playerMove.rightSprites:
+                    window.windowSize.blit(playerMove.rightSprites[playerMove.frameCount//3], (self.playerX,self.playerY))
+                    playerMove.frameCount +=1
             else:
-                if self.right:
-                    window.windowSize.blit(playerMove.rightSprites[0], (self.x, self.y))
+                if self.lastMove == "R":
+                    window.windowSize.blit(playerMove.rightSprites[0], (self.playerX, self.playerY))
                 else:
-                    window.windowSize.blit(playerMove.leftSprites[0], (self.x, self.y))
-            self.hitbox = (self.x + 17, self.y + 11, 29, 52) # NEW
-            pygame.draw.rect(win, (255,0,0), self.hitbox,2) # To draw the hit box around the player
+                    window.windowSize.blit(playerMove.leftSprites[0], (self.playerX, self.playerY))
+            self.hitbox = (self.playerX + 17, self.playerY + 11, 29, 52) 
+            pygame.draw.rect(window.windowSize, (255,0,0), self.hitbox,2) # To draw the hit box around the player
 
     def jumping(self):
         if self.isJump:
